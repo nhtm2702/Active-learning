@@ -2,6 +2,7 @@ import torch
 from .strategy import Strategy
 from .builder import STRATEGIES
 from datasets.dataloader import GetHandler
+import numpy as np
 
 
 @STRATEGIES.register_module()
@@ -48,8 +49,15 @@ class ScoreStrategy(Strategy):
         if self.args.aug_metric_ulb == 'density':
             self.calculating_sim_matrix(dataset_u)
             
-        print(len(dataset_u))
         
         aggre_scores = self.aggregate_scores(self.calculating_scores(dataset_u)).cpu()
+        score = aggre_scores.numpy()
+        for i in range(len(self.dataset.INDEX_ULB)):
+            if (self.dataset.INDEX_ULB[i] == False):
+                score = np.insert(score, i, 0, axis=None)
+        self.prev_score.append(score)
+        score = torch.tensor(self.prev_score)
+        variance = torch.var(score, dim = 0)
+        final_score = aggre_scores + 0.1 * variance[self.dataset.INDEX_ULB]
         print(len(aggre_scores))
-        return aggre_scores.sort()[1][-n:]
+        return final_score.sort()[1][-n:]

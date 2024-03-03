@@ -34,8 +34,8 @@ class Strategy:
         self.TextLogger = TextLogger(self.clf, vars(args), logger)
         self.timer = Timer()
         self.timestamp = timestamp
-        self.acc_val_list = []
         self.prev_score = []
+        self.acc_val_list = []
         self.acc_test_list = []
         self.num_labels_list = []
         self.TextLogger._dump_log(vars(args))
