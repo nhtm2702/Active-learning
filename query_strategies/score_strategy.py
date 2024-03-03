@@ -1,3 +1,4 @@
+%%writefile /kaggle/working/CAMPAL/query_strategies/score_strategy.py
 import torch
 from .strategy import Strategy
 from .builder import STRATEGIES
@@ -35,8 +36,7 @@ class ScoreStrategy(Strategy):
         elif self.args.aug_metric_ulb == 'sum':
             return torch.sum(scores, dim=0)
         elif self.args.aug_metric_ulb == 'min':
-            print(torch.min(scores, dim=0)[0])
-            return torch.min(scores, dim=0)[0]
+            return torch.var(scores, dim=0)
         elif self.args.aug_metric_ulb == 'density':
             return torch.mean(scores * self.sim_mat, dim=0)
         else:
@@ -50,6 +50,12 @@ class ScoreStrategy(Strategy):
             self.calculating_sim_matrix(dataset_u)
         
         aggre_scores = self.aggregate_scores(self.calculating_scores(dataset_u)).cpu()
-        variance = torch.var(aggre_scores)
-        scores = torch.abs(aggre_scores - variance)
-        return scores.sort()[1][-n:]
+        variance = []
+        for i in range(len(aggre_scores)):
+            if (len(aggre_scores[:(i + 1)]) == 1):
+                variance.append(aggre_scores[:(i + 1)])
+            else:
+                variance.append(torch.var(aggre_scores[:(i + 1)]))
+        variance = torch.tensor(variance)
+        score = aggre_scores + 0.1*variance
+        return score.sort()[1][-n:]
