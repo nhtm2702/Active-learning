@@ -2,7 +2,6 @@ import torch
 from .strategy import Strategy
 from .builder import STRATEGIES
 from datasets.dataloader import GetHandler
-import numpy as np
 
 
 @STRATEGIES.register_module()
@@ -56,8 +55,10 @@ class ScoreStrategy(Strategy):
             if (self.dataset.INDEX_ULB[i] == False):
                 score = np.insert(score, i, 0, axis=None)
         self.prev_score.append(score)
-        score = torch.tensor(self.prev_score)
-        variance = torch.var(score, dim = 0)
-        final_score = aggre_scores + 0.1 * variance[self.dataset.INDEX_ULB]
-        print(len(aggre_scores))
-        return final_score.sort()[1][-n:]
+        if (len(self.prev_score) > 1):
+            score = torch.tensor(self.prev_score)
+            variance = torch.var(score, dim = 0)
+            final_score = aggre_scores + 0.1 * variance[self.dataset.INDEX_ULB]
+            return final_score.sort()[1][-n:]
+        else:
+            return aggre_scores.sort()[1][-n:]
