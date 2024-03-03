@@ -1,4 +1,3 @@
-%%writefile /kaggle/working/CAMPAL/query_strategies/score_strategy.py
 import torch
 from .strategy import Strategy
 from .builder import STRATEGIES
@@ -50,12 +49,13 @@ class ScoreStrategy(Strategy):
             self.calculating_sim_matrix(dataset_u)
         
         aggre_scores = self.aggregate_scores(self.calculating_scores(dataset_u)).cpu()
-        variance = []
-        for i in range(len(aggre_scores)):
-            if (len(aggre_scores[:(i + 1)]) == 1):
-                variance.append(aggre_scores[:(i + 1)])
-            else:
-                variance.append(torch.var(aggre_scores[:(i + 1)]))
-        variance = torch.tensor(variance)
-        score = aggre_scores + 0.1*variance
-        return score.sort()[1][-n:]
+        pad = torch.zeros((self.args.n_cycle - self.cycle - 1) * self.args.num_query)
+        prev = torch.cat((aggre_scores.sort()[0][-n:], pad), 0)
+        self.prev_score.append(prev)
+        if (len(self.prev_score) > 1):
+            score = torch.tensor(self.prev_score)
+            variance = torch.var(score, dim = 0)
+            score = aggre_scores + 0.1 * variance
+            return score.sort()[1][-n:]
+        else:
+            return aggre_scores.sort()[1][-n:]
