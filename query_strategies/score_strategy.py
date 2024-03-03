@@ -47,15 +47,9 @@ class ScoreStrategy(Strategy):
                                strength_mode=self.args.aug_ulb_strength_mode, args_list=aug_args_list)
         if self.args.aug_metric_ulb == 'density':
             self.calculating_sim_matrix(dataset_u)
+            
+        print(len(dataset_u))
         
         aggre_scores = self.aggregate_scores(self.calculating_scores(dataset_u)).cpu()
-        pad = torch.zeros((self.args.n_cycle - self.cycle - 1) * self.args.num_query)
-        prev = torch.cat((aggre_scores.sort()[0][-n:], pad), 0)
-        self.prev_score.append(prev)
-        if (len(self.prev_score) > 1):
-            score = torch.tensor(self.prev_score)
-            variance = torch.var(score, dim = 0)
-            score = aggre_scores + 0.1 * variance
-            return score.sort()[1][-n:]
-        else:
-            return aggre_scores.sort()[1][-n:]
+        print(len(aggre_scores))
+        return aggre_scores.sort()[1][-n:]

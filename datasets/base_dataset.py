@@ -14,7 +14,7 @@ class BaseDataset(object, metaclass=ABCMeta):
                   'val': [], 'test': []}
     TRANSFORM = {'train': Compose([]), 'train_full': Compose([]), 'train_u': Compose([]),
                  'val': Compose([]), 'test': Compose([])}
-    SUBSET = 10000
+    SUBSET = 50000
     ORI_SIZE = 0
 
     def __init__(self,

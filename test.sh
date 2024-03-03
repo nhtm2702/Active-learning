@@ -11,10 +11,10 @@ run() {
     --model resnet18_cifar \
     --dataset cifar10 \
     --strategy MarginSampling \
-    --num-init-labels 1000 \
-    --n-cycle 5 \
-    --num-query 1000 \
-    --n-epoch 5 \
+    --num-init-labels 100 \
+    --n-cycle 2 \
+    --num-query 100 \
+    --n-epoch 1 \
     --subset 50000 \
     --seed 43 \
     --batch-size 50 \
