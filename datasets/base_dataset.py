@@ -14,8 +14,9 @@ class BaseDataset(object, metaclass=ABCMeta):
                   'val': [], 'test': []}
     TRANSFORM = {'train': Compose([]), 'train_full': Compose([]), 'train_u': Compose([]),
                  'val': Compose([]), 'test': Compose([])}
-    
+    SUBSET = 10000
     ORI_SIZE = 0
+    U_SELECTED = []
 
     def __init__(self,
                  data_path=None,
@@ -75,11 +76,12 @@ class BaseDataset(object, metaclass=ABCMeta):
         self.QUERIED_HISTORY.append(initial_lb.tolist())
 
     def select_ulb(self):
-        U_SELECTED = np.arange(len(self.DATA_INFOS['train_full']))[~self.INDEX_LB]
-#         if self.SUBSET >= len(self.DATA_INFOS['train_full']) - len(self.DATA_INFOS['train']):
-#             U_SELECTED = U_TEMP
-#         else:
-#             U_SELECTED = np.random.choice(U_TEMP, self.SUBSET, replace=False)
+        U_TEMP = np.arange(len(self.DATA_INFOS['train_full']))[~self.INDEX_LB]
+        if self.SUBSET >= len(self.DATA_INFOS['train_full']) - len(self.DATA_INFOS['train']):
+            U_SELECTED = U_TEMP
+        else:
+            U_SELECTED = np.random.choice(U_TEMP, self.SUBSET, replace=False)
+        self.U_SELECTED = U_SELECTED
         self.INDEX_ULB = np.array([True if x in U_SELECTED else False
                                    for x in range(len(self.DATA_INFOS['train_full']))])
         self.DATA_INFOS['train_u'] = np.array(self.DATA_INFOS['train_full'])[self.INDEX_ULB].tolist()

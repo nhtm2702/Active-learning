@@ -2,6 +2,7 @@ import torch
 from .strategy import Strategy
 from .builder import STRATEGIES
 from datasets.dataloader import GetHandler
+import numpy as np
 
 
 @STRATEGIES.register_module()
@@ -48,17 +49,29 @@ class ScoreStrategy(Strategy):
         if self.args.aug_metric_ulb == 'density':
             self.calculating_sim_matrix(dataset_u)
             
+#         print(len(dataset_u))
+#         print(len(self.dataset.U_SELECTED))
+#         print(len(self.dataset.DATA_INFOS['train_u']))
+#         print(self.dataset.U_SELECTED)
+            
         
         aggre_scores = self.aggregate_scores(self.calculating_scores(dataset_u)).cpu()
-        score = aggre_scores.numpy()
-        for i in range(len(self.dataset.INDEX_ULB)):
-            if (self.dataset.INDEX_ULB[i] == False):
-                score = np.insert(score, i, 0, axis=None)
+        mean = torch.mean(aggre_scores)
+        score = np.zeros(len(self.dataset.INDEX_ULB))
+        score[self.dataset.U_SELECTED] = aggre_scores
         self.prev_score.append(score)
-        if (len(self.prev_score) > 1):
-            score = torch.tensor(self.prev_score)
-            variance = torch.var(score, dim = 0)
-            final_score = aggre_scores + 0.1 * variance[self.dataset.INDEX_ULB]
-            return final_score.sort()[1][-n:]
-        else:
-            return aggre_scores.sort()[1][-n:]
+        temp = []
+        variance = []
+        for i in self.prev_score:
+            i = i[self.dataset.U_SELECTED]
+            temp.append(i)
+        temp = torch.tensor(np.array(temp))
+        temp = temp.T
+        for i in temp:
+            if (len(i[i != 0]) > 1):
+                variance.append(torch.var(i[i != 0]))
+            else:
+                variance.append(mean)
+        variance = torch.tensor(np.array(variance))
+        aggre_scores += variance
+        return aggre_scores.sort()[1][-n:]
