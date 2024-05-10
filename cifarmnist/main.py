@@ -59,7 +59,7 @@ def run(config: dict = None):
         set_seed(config.seed)
 
     dataset = DATASETS.build(
-        dict(type=config.dataset, initial_size=config.num_init_labels, seed = config.seed))
+        dict(type=config.dataset, initial_size=config.num_init_labels))
     
     n_pool = len(dataset.DATA_INFOS['train_full'])
     n_eval = len(dataset.DATA_INFOS['val'])
