@@ -1,4 +1,4 @@
-CUDA_VISIBLE_DEVICES=0 /kaggle/working/CAMPAL/main.py \
+CUDA_VISIBLE_DEVICES=0 /kaggle/working/Active-learning/cifarmnist/main.py \
     --model resnet18_cifar \
     --dataset cifar10 \
     --strategy MarginSampling \
@@ -7,6 +7,7 @@ CUDA_VISIBLE_DEVICES=0 /kaggle/working/CAMPAL/main.py \
     --num-query 500 \
     --n-epoch 5 \
     --updating \
+    --seed 26 \
     --batch-size 50 \
     --lr 0.1 \
     --momentum 0.9 \

@@ -1,4 +1,4 @@
-CUDA_VISIBLE_DEVICES=0 /kaggle/working/CAMPAL/main.py \
+CUDA_VISIBLE_DEVICES=0 /kaggle/working/Active-learning/medical/main.py \
     --model resnet18_cifar \
     --dataset cifar10 \
     --strategy MarginSampling \
