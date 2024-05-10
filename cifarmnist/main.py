@@ -7,6 +7,7 @@ import uuid
 import random
 
 import torch
+from torchinfo import summary
 import numpy as np
 from datasets.builder import DATASETS
 from architectures.builder import MODELS
@@ -16,6 +17,16 @@ from utils.logger import get_logger
 from utils.collect_env import collect_env
 from utils.timer import Timer
 import matplotlib.pyplot as plt
+
+
+def set_seed(seed):
+    random.seed(seed)
+    os.environ['PYTHONHASHSEED'] = str(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed(seed)
+    torch.backends.cudnn.deterministic = True
+    torch.backends.cudnn.benchmark = True
 
 
 def run(config: dict = None):
@@ -43,10 +54,13 @@ def run(config: dict = None):
     dash_line = '-' * 60 + '\n'
     logger.info('Environment info:\n' + dash_line + env_info + '\n' +
                 dash_line)
+    
+    if config.seed is not None:
+        set_seed(config.seed)
 
     dataset = DATASETS.build(
-        dict(type=config.dataset, initial_size=config.num_init_labels))
-
+        dict(type=config.dataset, initial_size=config.num_init_labels, seed = config.seed))
+    
     n_pool = len(dataset.DATA_INFOS['train_full'])
     n_eval = len(dataset.DATA_INFOS['val'])
     n_test = len(dataset.DATA_INFOS['test'])
@@ -56,6 +70,7 @@ def run(config: dict = None):
     logger.info('cardinality of initial test pool: {}'.format(n_test))
 
     net = MODELS.build(dict(type=config.model))
+   
     strategy = STRATEGIES.build(dict(type=config.strategy,
                                      dataset=dataset,
                                      net=net, args=config,
