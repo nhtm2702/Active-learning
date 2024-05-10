@@ -19,8 +19,8 @@ class MBH(Dataset):
     def __init__(self, train: bool = True, transform=None, target_transform=None):
         self.train = train
         
-        self.img_info = pd.read_csv('/kaggle/input/mbh_al_old_2labels/AL/data.csv')
-        self.img_dir = '/kaggle/input/mbh_al_old_2labels/AL'
+        self.img_info = pd.read_csv('/kaggle/input/mbh-al/AL/data.csv')
+        self.img_dir = '/kaggle/input/mbh-al/AL'
         
         lbe = LabelEncoder()
         lbe.fit(self.img_info['labels'])
