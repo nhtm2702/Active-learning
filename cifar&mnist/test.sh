@@ -1,22 +1,12 @@
-#function run
-run() {
-    number=$1
-    shift
-    for i in `seq $number`; do
-      $@
-    done
-}
-
-   CUDA_VISIBLE_DEVICES=0 /kaggle/working/CAMPAL/main.py \
+CUDA_VISIBLE_DEVICES=0 /kaggle/working/CAMPAL/main.py \
     --model resnet18_cifar \
     --dataset cifar10 \
     --strategy MarginSampling \
-    --num-init-labels 100 \
-    --n-cycle 2 \
-    --num-query 100 \
-    --n-epoch 1 \
-    --subset 50000 \
-    --seed 43 \
+    --num-init-labels 500 \
+    --n-cycle 5 \
+    --num-query 500 \
+    --n-epoch 5 \
+    --updating \
     --batch-size 50 \
     --lr 0.1 \
     --momentum 0.9 \

@@ -14,14 +14,13 @@ class BaseDataset(object, metaclass=ABCMeta):
                   'val': [], 'test': []}
     TRANSFORM = {'train': Compose([]), 'train_full': Compose([]), 'train_u': Compose([]),
                  'val': Compose([]), 'test': Compose([])}
-    SUBSET = 10000
+    SUBSET = 1000
     ORI_SIZE = 0
-    U_SELECTED = []
 
     def __init__(self,
                  data_path=None,
                  initial_size=None,
-                 subset=None):
+                 subset=None, seed=0):
         super(BaseDataset, self).__init__()
         self.TRANSFORM = {'train': self.default_train_transform,
                           'train_full': self.default_val_transform,
@@ -29,10 +28,13 @@ class BaseDataset(object, metaclass=ABCMeta):
                           'val': self.default_val_transform,
                           'test': self.default_val_transform}
         self.DATA_PATH = data_path
+        self.seed = seed
         self.load_data()
         self.num_samples = len(self.DATA_INFOS['train_full'])
         if initial_size is None:
             initial_size = self.num_samples // 100
+        if subset is None:
+            self.SUBSET = max(1000, self.num_samples // 10)
         self.initialize_lb(initial_size)
 
     @property
@@ -81,6 +83,7 @@ class BaseDataset(object, metaclass=ABCMeta):
             U_SELECTED = U_TEMP
         else:
             U_SELECTED = np.random.choice(U_TEMP, self.SUBSET, replace=False)
+            
         self.U_SELECTED = U_SELECTED
         self.INDEX_ULB = np.array([True if x in U_SELECTED else False
                                    for x in range(len(self.DATA_INFOS['train_full']))])

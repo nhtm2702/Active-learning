@@ -1,0 +1,25 @@
+CUDA_VISIBLE_DEVICES=0 /kaggle/working/CAMPAL/main.py \
+    --model resnet18_cifar \
+    --dataset cifar10 \
+    --strategy MarginSampling \
+    --num-init-labels 500 \
+    --n-cycle 5 \
+    --num-query 500 \
+    --n-epoch 5 \
+    --seed 26 \
+    --updating \
+    --batch-size 16 \
+    --lr 0.01 \
+    --momentum 0.9 \
+    --weight-decay 0.0005 \
+    --aug-lab-on \
+    --aug-ratio-lab 10 \
+    --mix-ratio-lab 5 \
+    --aug-lab-training-mode StrengthGuidedAugment \
+    --aug-lab-strength-mode all \
+    --aug-ulb-on \
+    --aug-ratio-ulb 1 \
+    --mix-ratio-ulb 1 \
+    --aug-ulb-evaluation-mode StrengthGuidedAugment \
+    --aug-ulb-strength-mode all \
+    --aug-metric-ulb min

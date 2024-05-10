@@ -49,11 +49,6 @@ class ScoreStrategy(Strategy):
         if self.args.aug_metric_ulb == 'density':
             self.calculating_sim_matrix(dataset_u)
             
-#         print(len(dataset_u))
-#         print(len(self.dataset.U_SELECTED))
-#         print(len(self.dataset.DATA_INFOS['train_u']))
-#         print(self.dataset.U_SELECTED)
-            
         
         aggre_scores = self.aggregate_scores(self.calculating_scores(dataset_u)).cpu()
         mean = torch.mean(aggre_scores)
@@ -71,7 +66,7 @@ class ScoreStrategy(Strategy):
             if (len(i[i != 0]) > 1):
                 variance.append(torch.var(i[i != 0]))
             else:
-                variance.append(mean)
+                variance.append(0)
         variance = torch.tensor(np.array(variance))
-        aggre_scores += variance
+        aggre_scores = aggre_scores + variance
         return aggre_scores.sort()[1][-n:]
