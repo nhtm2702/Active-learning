@@ -1,6 +1,6 @@
 CUDA_VISIBLE_DEVICES=0 /kaggle/working/Active-learning/cifarmnist/main.py \
     --model resnet18_cifar \
-    --dataset cifar10 \
+    --dataset svhn \
     --strategy MarginSampling \
     --num-init-labels 500 \
     --n-cycle 5 \

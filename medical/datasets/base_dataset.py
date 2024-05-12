@@ -14,7 +14,7 @@ class BaseDataset(object, metaclass=ABCMeta):
                   'val': [], 'test': []}
     TRANSFORM = {'train': Compose([]), 'train_full': Compose([]), 'train_u': Compose([]),
                  'val': Compose([]), 'test': Compose([])}
-    SUBSET = 1000
+    SUBSET = 10000
     ORI_SIZE = 0
 
     def __init__(self,
@@ -34,7 +34,7 @@ class BaseDataset(object, metaclass=ABCMeta):
         if initial_size is None:
             initial_size = self.num_samples // 100
         if subset is None:
-            self.SUBSET = max(1000, self.num_samples // 10)
+            self.SUBSET = max(10000, self.num_samples // 10)
         self.initialize_lb(initial_size)
 
     @property
